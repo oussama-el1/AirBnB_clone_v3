@@ -6,7 +6,7 @@ from models.state import State
 from flask import jsonify, abort, make_response, request
 
 
-@app_views.route('/states', methods=['GET'])
+@app_views.route('/states', methods=['GET'], strict_slashes=False)
 def all_state():
     """Retrieves the list of all State objects:"""
     listObject = []
@@ -16,16 +16,13 @@ def all_state():
 
 
 @app_views.route('/states/<state_id>', methods=['GET'])
-def get_state(state_id):
-    """get a satate"""
-    obj = None
-    MatchingKey = "State" + "." + state_id
-    for k, v in storage.all(State).items():
-        if k == MatchingKey:
-            obj = v
-            return make_response(jsonify(obj.to_dict()), 200)
-    if obj is None:
+def state_get(state_id):
+    """ handles GET method """
+    state = storage.get(State, state_id)
+    if state is None:
         abort(404)
+    state = state.to_json()
+    return jsonify(state)
 
 
 @app_views.route('/states/<state_id>',  methods=['DELETE'])
@@ -40,7 +37,7 @@ def delete_state(state_id):
     abort(404)
 
 
-@app_views.route('/states', methods=['POST'])
+@app_views.route('/states', methods=['POST'], strict_slashes=False)
 def add_state():
     """Post state"""
     data = request.get_json()
@@ -48,27 +45,24 @@ def add_state():
         abort(400, 'Not a JSON')
     if "name" not in data:
         abort(400, "Missing name")
-    obj = State(name=data['name'])
-    storage.new(obj)
-    storage.save()
+    obj = State(**data)
+    obj.save()
     return jsonify(obj.to_dict()), 201
 
 
 @app_views.route('/states/<state_id>', methods=['PUT'])
-def updtdate_state(state_id):
-    """Update state"""
-    try:
-        matchstring = 'State.' + state_id
-        obj = storage.all(State)[matchstring]
-    except Exception:
-        obj = None
-    if obj is None:
+def state_put(state_id):
+    """ handles PUT method """
+    state = storage.get("State", state_id)
+    if state is None:
         abort(404)
     data = request.get_json()
-    if data is None or not isinstance(data, dict):
-        abort(400, 'Not a JSON')
-    for st in storage.all(State).values():
-        if st.id == state_id:
-            st.name = request.json['name']
-    storage.save()
-    return jsonify(obj.to_dict()), 200
+    if data is None:
+        abort(400, "Not a JSON")
+    for key, value in data.items():
+        ignore_keys = ["id", "created_at", "updated_at"]
+        if key not in ignore_keys:
+            state.bm_update(key, value)
+    state.save()
+    state = state.to_json()
+    return jsonify(state), 200
