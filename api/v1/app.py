@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 """Flask import"""
-from flask import Flask
+from flask import Flask, jsonify, make_response
 from models import storage
 from api.v1.views import app_views
 from os import getenv
@@ -13,6 +13,12 @@ app.register_blueprint(app_views)
 def close_session(error):
     """ close the current session"""
     storage.close()
+
+
+@app.errorhandler(404)
+def not_found(error):
+    """Not Found 404"""
+    return make_response(jsonify({"error": "Not found"}), 404)
 
 
 if __name__ == '__main__':
