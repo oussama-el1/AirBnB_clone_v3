@@ -51,20 +51,18 @@ def add_state():
 
 
 @app_views.route('/states/<state_id>', methods=['PUT'])
-def updtdate_state(state_id):
-    """Update state"""
-    try:
-        matchstring = 'State.' + state_id
-        obj = storage.all(State)[matchstring]
-    except Exception:
-        obj = None
-    if obj is None:
+def state_put(state_id):
+    """ handles PUT method """
+    state = storage.get(State, state_id)
+    if state is None:
         abort(404)
     data = request.get_json()
-    if data is None or not isinstance(data, dict):
-        abort(400, 'Not a JSON')
-    for st in storage.all(State).values():
-        if st.id == state_id:
-            st.name = request.json['name']
-    storage.save()
-    return jsonify(obj.to_dict()), 200
+    if data is None:
+        abort(400, "Not a JSON")
+    for key, value in data.items():
+        ignore_keys = ["id", "created_at", "updated_at"]
+        if key not in ignore_keys:
+            state.key = value
+    state.save()
+    state = state.to_dict()
+    return jsonify(state), 200
