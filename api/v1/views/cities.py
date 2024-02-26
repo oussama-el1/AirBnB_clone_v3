@@ -18,7 +18,8 @@ def all_cities(state_id):
         return jsonify([city.to_dict() for city in obj.cities]), 200
 
 
-@app_views.route('/cities/<city_id>', methods=['GET'])
+@app_views.route('/cities/<city_id>', methods=['GET'],
+                 strict_slashes=False)
 def city_get(city_id):
     """ handles GET methode for one City """
     city = storage.get(City, city_id)
@@ -28,7 +29,8 @@ def city_get(city_id):
         return jsonify(city.to_dict()), 200
 
 
-@app_views.route('/cities/<city_id>',  methods=['DELETE'])
+@app_views.route('/cities/<city_id>',  methods=['DELETE'],
+                 strict_slashes=False)
 def delete_city(city_id):
     """delete a city"""
     city = storage.get(City, city_id)
@@ -55,11 +57,13 @@ def add_city(state_id):
     NewObj = City(**city)
     NewObj.state_id = state_id
     NewObj.save()
-    return jsonify(NewObj.to_dict()), 200
+    return jsonify(NewObj.to_dict()), 201
 
 
-@app_views.route('/cities/<city_id>', methods=['PUT'])
+@app_views.route('/cities/<city_id>', methods=['PUT'],
+                 strict_slashes=False)
 def update_city(city_id):
+    """update city"""
     city = storage.get(City, city_id)
     if city is None:
         abort(404)
