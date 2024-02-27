@@ -40,9 +40,9 @@ def delete_state(state_id):
 @app_views.route('/states', methods=['POST'], strict_slashes=False)
 def add_state():
     """Post state"""
-    data = request.get_json()
     if request.content_type != 'application/json':
         abort(400, 'Not a JSON')
+    data = request.get_json()
     if "name" not in data:
         abort(400, "Missing name")
     obj = State(**data)
