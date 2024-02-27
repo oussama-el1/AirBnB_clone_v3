@@ -28,7 +28,7 @@ def amenity_get(amenity_id):
 
 @app_views.route('/amenities/<amenity_id>',  methods=['DELETE'],
                  strict_slashes=False)
-def delete_city(amenity_id):
+def delete_amenity(amenity_id):
     """delete a amenity"""
     amenity = storage.get(Amenity, amenity_id)
     if amenity is None:
@@ -40,7 +40,7 @@ def delete_city(amenity_id):
 
 
 @app_views.route('/amenities', methods=['POST'], strict_slashes=False)
-def add_state():
+def add_amenity():
     """Post amenity"""
     data = request.get_json()
     if data is None or not isinstance(data, dict):
@@ -54,7 +54,7 @@ def add_state():
 
 @app_views.route('/amenities/<amenity_id>', methods=['PUT'],
                  strict_slashes=False)
-def update_city(amenity_id):
+def update_amenity(amenity_id):
     """update amenity"""
     amenity = storage.get(Amenity, amenity_id)
     if amenity is None:
