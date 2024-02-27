@@ -43,7 +43,7 @@ def delete_amenity(amenity_id):
 def add_amenity():
     """Post amenity"""
     data = request.get_json()
-    if data is None or not isinstance(data, dict):
+    if data is None:
         abort(400, 'Not a JSON')
     if "name" not in data:
         abort(400, "Missing name")
@@ -60,7 +60,7 @@ def update_amenity(amenity_id):
     if amenity is None:
         abort(404)
     data = request.get_json()
-    if not data or not isinstance(data, dict):
+    if not data:
         abort(400, 'Not a JSON')
     ignored_keys = ['id', 'created_at', 'updated_at']
     for k, v in data.items():
