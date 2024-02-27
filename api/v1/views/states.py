@@ -41,7 +41,7 @@ def delete_state(state_id):
 def add_state():
     """Post state"""
     data = request.get_json()
-    if data is None or not isinstance(data, dict):
+    if request.content_type != 'application/json':
         abort(400, 'Not a JSON')
     if "name" not in data:
         abort(400, "Missing name")
@@ -60,8 +60,7 @@ def updtdate_state(state_id):
         obj = None
     if obj is None:
         abort(404)
-    data = request.get_json()
-    if not data or not isinstance(data, dict):
+    if request.content_type != 'application/json':
         abort(400, 'Not a JSON')
     for st in storage.all(State).values():
         if st.id == state_id:
