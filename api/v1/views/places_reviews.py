@@ -83,5 +83,4 @@ def review_put(review_id):
         if key not in ignore_keys:
             setattr(review, key, value)
     review.save()
-    review = review.to_json()
-    return jsonify(review), 200
+    return jsonify(review.to_dict()), 200
