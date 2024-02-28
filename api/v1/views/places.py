@@ -52,15 +52,15 @@ def add_place(city_id):
         abort(404)
     if request.content_type != 'application/json':
         abort(400, 'Not a JSON')
-    place = request.get_json()
-    if 'user_id' not in place:
+    data = request.get_json()
+    if 'user_id' not in data.keys():
         abort(400, 'Missing user_id')
-    user = storage.get(User, place.user_id)
+    user = storage.get(User, data['user_id'])
     if user is None:
         abort(404)
-    if 'name' not in place:
+    if 'name' not in data.keys():
         abort(400, 'Missing name')
-    NewObj = Place(**place)
+    NewObj = Place(**data)
     NewObj.city_id = city_id
     NewObj.save()
     return jsonify(NewObj.to_dict()), 201
